@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار أساسيات JavaScript</title>
+    <style>
+        :root {
+            --bg-light: #efefef;
+            --bg-dark: #707070;
+            --clr: #58bc82;
+            --clr-alpha: #9c9c9c60;
+            --error: #e74c3c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            color: var(--bg-dark);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--clr);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-container {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--bg-dark);
+        }
+        
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .option {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .option.selected {
+            background-color: var(--clr);
+            color: white;
+            border-color: var(--clr);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-prev {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-next {
+            background-color: var(--bg-dark);
+            color: white;
+        }
+        
+        .btn-submit {
+            background-color: var(--clr);
+            color: white;
+            display: none;
+        }
+        
+        .btn-prev:hover {
+            background-color: #d0d0d0;
+        }
+        
+        .btn-next:hover {
+            background-color: #606060;
+        }
+        
+        .btn-submit:hover {
+            background-color: #4a9e6d;
+        }
+        
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: var(--clr);
+        }
+        
+        .summary {
+            text-align: right;
+            margin-top: 30px;
+        }
+        
+        .correct-answer {
+            color: var(--clr);
+            font-weight: bold;
+        }
+        
+        .wrong-answer {
+            color: var(--error);
+            font-weight: bold;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            border: 1px solid var(--clr-alpha);
+            border-radius: 1rem;
+            background-color: var(--bg-light);
+        }
+        
+        .input-span {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .login-form input[type="text"],
+        .login-form input[type="email"] {
+            border-radius: 0.5rem;
+            padding: 1rem 0.75rem;
+            width: 100%;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--clr-alpha);
+            outline: 2px solid var(--bg-dark);
+        }
+        
+        .login-form input[type="text"]:focus,
+        .login-form input[type="email"]:focus {
+            outline: 2px solid var(--clr);
+        }
+        
+        .label {
+            align-self: flex-start;
+            color: var(--clr);
+            font-weight: 600;
+        }
+        
+        .submit {
+            padding: 1rem 0.75rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border-radius: 3rem;
+            background-color: var(--bg-dark);
+            color: var(--bg-light);
+            border: none;
+            cursor: pointer;
+            transition: all 300ms;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        .submit:hover {
+            background-color: var(--clr);
+            color: var(--bg-dark);
+        }
+        
+        .error-message {
+            color: var(--error);
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- نموذج تسجيل الدخول -->
+    <div id="loginSection" class="login-form">
+        <h2>تسجيل الدخول للاختبار</h2>
+        <form id="loginForm">
+            <span class="input-span">
+                <label for="name" class="label">الاسم الكامل</label>
+                <input type="text" name="name" id="name" required />
+            </span>
+            <span class="input-span">
+                <label for="email" class="label">البريد الإلكتروني</label>
+                <input type="email" name="email" id="email" required />
+            </span>
+            <input class="submit" type="submit" value="بدء الاختبار" />
+        </form>
+        <div id="loginError" class="error-message">يرجى ملء جميع الحقول</div>
+    </div>
+
+    <!-- قسم الاختبار -->
+    <div id="testSection" class="container" style="display: none;">
+        <h1>اختبار أساسيات JavaScript</h1>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        
+        <div id="questionsContainer"></div>
+        
+        <div class="navigation">
+            <button id="prevBtn" class="btn-prev">السابق</button>
+            <button id="nextBtn" class="btn-next">التالي</button>
+            <button id="submitBtn" class="btn-submit">إنهاء الاختبار</button>
+        </div>
+    </div>
+
+    <!-- قسم النتائج -->
+    <div id="resultSection" class="container result-container" style="display: none;">
+        <h2>نتيجة الاختبار</h2>
+        <div class="score" id="finalScore"></div>
+        <p id="resultMessage"></p>
+        <div id="answersSummary" class="summary"></div>
+        <button id="restartBtn" class="submit" style="margin-top: 20px;">إعادة الاختبار</button>
+    </div>
+
+    <script>
+        // بيانات المستخدم
+        let userData = {
+            name: '',
+            email: ''
+        };
+
+        // الأسئلة المحدثة
+        const questions = [
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let value = 50;
+if (value < 50) {
+    console.log("Low");
+} else if (value == 50) {
+    console.log("Mid");
+} else {
+    console.log("High");
+}`,
+                options: [
+                    "Low",
+                    "Mid",
+                    "High",
+                    "لن يطبع شيئاً"
+                ],
+                answer: 1
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let age = 18;
+if (age > 20) {
+    console.log("Adult");
+} else {
+    console.log("Young");
+}`,
+                options: [
+                    "Adult",
+                    "Young",
+                    "undefined",
+                    "خطأ"
+                ],
+                answer: 1
+            },
+            {
+                question: "ما هي قيمة result بعد تنفيذ الكود التالي؟",
+                code: `let num1 = 5;
+let num2 = 10;
+num1 = num1 + 3;
+let result = num1 + num2;`,
+                options: [
+                    "15",
+                    "18",
+                    "8",
+                    "10"
+                ],
+                answer: 1
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `console.log(10 - 4 + " total");`,
+                options: [
+                    "6 total",
+                    "10-4 total",
+                    "10 total",
+                    "خطأ"
+                ],
+                answer: 0
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let x = 10;
+let y = 5;
+if (x > y) {
+    console.log("x أكبر");
+} else {
+    console.log("y أكبر");
+}`,
+                options: [
+                    "x أكبر",
+                    "y أكبر",
+                    "10",
+                    "5"
+                ],
+                answer: 0
+            },
+            {
+                question: "ما هي قيمة z بعد تنفيذ الكود التالي؟",
+                code: `let x = 7;
+let y = 3;
+let z = x * y + 2;`,
+                options: [
+                    "21",
+                    "23",
+                    "27",
+                    "30"
+                ],
+                answer: 1
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let name = "Ahmed";
+console.log("Hello " + name);`,
+                options: [
+                    "Hello Ahmed",
+                    "Hello name",
+                    "Ahmed",
+                    "خطأ"
+                ],
+                answer: 0
+            },
+            {
+                question: "ما هي نتيجة المقارنة التالية؟",
+                code: `console.log(5 == "5");`,
+                options: [
+                    "true",
+                    "false",
+                    "undefined",
+                    "خطأ"
+                ],
+                answer: 0
+            },
+            {
+                question: "ما هي نتيجة المقارنة التالية؟",
+                code: `console.log(5 === "5");`,
+                options: [
+                    "true",
+                    "false",
+                    "undefined",
+                    "خطأ"
+                ],
+                answer: 1
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let a = true;
+let b = false;
+console.log(a && b);`,
+                options: [
+                    "true",
+                    "false",
+                    "undefined",
+                    "خطأ"
+                ],
+                answer: 1
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let a = true;
+let b = false;
+console.log(a || b);`,
+                options: [
+                    "true",
+                    "false",
+                    "undefined",
+                    "خطأ"
+                ],
+                answer: 0
+            },
+            {
+                question: "ما هي قيمة num بعد تنفيذ الكود التالي؟",
+                code: `let num = 10;
+num += 5;
+num -= 3;`,
+                options: [
+                    "10",
+                    "12",
+                    "15",
+                    "18"
+                ],
+                answer: 1
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let x = 10;
+if (x > 5 && x < 15) {
+    console.log("في النطاق");
+} else {
+    console.log("خارج النطاق");
+}`,
+                options: [
+                    "في النطاق",
+                    "خارج النطاق",
+                    "true",
+                    "false"
+                ],
+                answer: 0
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let score = 85;
+if (score >= 90) {
+    console.log("ممتاز");
+} else if (score >= 80) {
+    console.log("جيد جداً");
+} else if (score >= 70) {
+    console.log("جيد");
+} else {
+    console.log("مقبول");
+}`,
+                options: [
+                    "ممتاز",
+                    "جيد جداً",
+                    "جيد",
+                    "مقبول"
+                ],
+                answer: 1
+            },
+            {
+                question: "ما هي قيمة result بعد تنفيذ الكود التالي؟",
+                code: `let x = 10;
+let y = 3;
+let result = x % y;`,
+                options: [
+                    "1",
+                    "3",
+                    "0",
+                    "13"
+                ],
+                answer: 0
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let isRaining = true;
+if (!isRaining) {
+    console.log("الطقس جميل");
+} else {
+    console.log("احمل مظلة");
+}`,
+                options: [
+                    "الطقس جميل",
+                    "احمل مظلة",
+                    "true",
+                    "false"
+                ],
+                answer: 1
+            },
+            {
+                question: "ما هي قيمة x بعد تنفيذ الكود التالي؟",
+                code: `let x = 5;
+x++;
+x += 2;`,
+                options: [
+                    "5",
+                    "6",
+                    "7",
+                    "8"
+                ],
+                answer: 3
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let age = 25;
+let message = (age >= 18) ? "بالغ" : "قاصر";
+console.log(message);`,
+                options: [
+                    "بالغ",
+                    "قاصر",
+                    "true",
+                    "false"
+                ],
+                answer: 0
+            },
+            {
+                question: "ما هي نتيجة المقارنة التالية؟",
+                code: `console.log(10 != "10");`,
+                options: [
+                    "true",
+                    "false",
+                    "undefined",
+                    "خطأ"
+                ],
+                answer: 1
+            },
+            {
+                question: "ماذا سوف يطبع الكود التالي؟",
+                code: `let a = 5;
+let b = 10;
+let c = 15;
+console.log(a < b && b < c);`,
+                options: [
+                    "true",
+                    "false",
+                    "undefined",
+                    "خطأ"
+                ],
+                answer: 0
+            }
+        ];
+
+        // حالة الاختبار
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let testStarted = false;
+
+        // عناصر DOM
+        const loginSection = document.getElementById('loginSection');
+        const testSection = document.getElementById('testSection');
+        const resultSection = document.getElementById('resultSection');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const finalScore = document.getElementById('finalScore');
+        const resultMessage = document.getElementById('resultMessage');
+        const answersSummary = document.getElementById('answersSummary');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // إعداد نموذج تسجيل الدخول
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            if (name && email) {
+                userData.name = name;
+                userData.email = email;
+                startTest();
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+
+        // بدء الاختبار
+        function startTest() {
+            loginSection.style.display = 'none';
+            testSection.style.display = 'block';
+            testStarted = true;
+            showQuestion();
+            updateProgressBar();
+            
+            // منع المستخدم من الخروج أثناء الاختبار
+            window.addEventListener('beforeunload', handleBeforeUnload);
+        }
+
+        // التعامل مع محاولة الخروج
+        function handleBeforeUnload(e) {
+            if (testStarted) {
+                e.preventDefault();
+                e.returnValue = 'إذا خرجت الآن، ستفقد تقدمك في الاختبار. هل أنت متأكد؟';
+                return e.returnValue;
+            }
+        }
+
+        // عرض السؤال الحالي
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            
+            let optionsHtml = '';
+            question.options.forEach((option, index) => {
+                const isSelected = userAnswers[currentQuestion] === index;
+                optionsHtml += `
+                    <div class="option ${isSelected ? 'selected' : ''}" onclick="selectOption(${index})">
+                        ${option}
+                    </div>
+                `;
+            });
+            
+            let codeHtml = '';
+            if (question.code) {
+                codeHtml = `<div class="code-block">${question.code}</div>`;
+            }
+            
+            questionsContainer.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">السؤال ${currentQuestion + 1} من ${questions.length}</div>
+                    <div class="question-text">${question.question}</div>
+                    ${codeHtml}
+                    <div class="options">${optionsHtml}</div>
+                </div>
+            `;
+            
+            // تحديث حالة الأزرار
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.style.display = currentQuestion < questions.length - 1 ? 'block' : 'none';
+            submitBtn.style.display = currentQuestion === questions.length - 1 ? 'block' : 'none';
+        }
+
+        // تحديد خيار
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            showQuestion();
+        }
+
+        // تحديث شريط التقدم
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // الانتقال إلى السؤال السابق
+        prevBtn.addEventListener('click', function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+                updateProgressBar();
+            }
+        });
+
+        // الانتقال إلى السؤال التالي
+        nextBtn.addEventListener('click', function() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+                updateProgressBar();
+            }
+        });
+
+        // إنهاء الاختبار وعرض النتائج
+        submitBtn.addEventListener('click', function() {
+            testStarted = false;
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            showResults();
+        });
+
+        // إعادة الاختبار
+        restartBtn.addEventListener('click', function() {
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            userData.name = '';
+            userData.email = '';
+            
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            
+            resultSection.style.display = 'none';
+            loginSection.style.display = 'block';
+        });
+
+        // عرض النتائج
+        function showResults() {
+            let score = 0;
+            let summaryHtml = '<h3>ملخص الإجابات:</h3>';
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.answer;
+                
+                if (isCorrect) {
+                    score++;
+                }
+                
+                summaryHtml += `
+                    <div class="question-summary">
+                        <p><strong>السؤال ${index + 1}:</strong> ${question.question}</p>
+                        ${question.code ? `<div class="code-block">${question.code}</div>` : ''}
+                        <p>إجابتك: <span class="${isCorrect ? 'correct-answer' : 'wrong-answer'}">${userAnswer !== null ? question.options[userAnswer] : 'لم تجب'}</span></p>
+                        ${!isCorrect ? `<p>الإجابة الصحيحة: <span class="correct-answer">${question.options[question.answer]}</span></p>` : ''}
+                        <hr>
+                    </div>
+                `;
+            });
+            
+            const percentage = (score / questions.length) * 100;
+            finalScore.textContent = `${score} / ${questions.length}`;
+            
+            if (percentage >= 80) {
+                resultMessage.textContent = 'ممتاز! لديك فهم قوي لأساسيات JavaScript.';
+            } else if (percentage >= 60) {
+                resultMessage.textContent = 'جيد جداً! لديك فهم جيد لأساسيات JavaScript.';
+            } else if (percentage >= 40) {
+                resultMessage.textContent = 'مقبول! تحتاج إلى مراجعة بعض الأساسيات.';
+            } else {
+                resultMessage.textContent = 'ضعيف! تحتاج إلى دراسة أساسيات JavaScript مرة أخرى.';
+            }
+            
+            answersSummary.innerHTML = summaryHtml;
+            
+            testSection.style.display = 'none';
+            resultSection.style.display = 'block';
+            
+            // إرسال النتائج إلى Telegram
+            sendToTelegram(score, percentage);
+        }
+
+        // إرسال النتائج إلى Telegram
+        function sendToTelegram(score, percentage) {
+            const token = '6506189895:AAEwRi0WpBXi3pQ91MAkz8JcsS64v6R5voE';
+            const chatId = '6895524607';
+            
+            const message = `
+نتيجة اختبار JavaScript:
+الاسم: ${userData.name}
+البريد الإلكتروني: ${userData.email}
+النتيجة: ${score}/${questions.length} (${percentage.toFixed(1)}%)
+            `;
+            
+            fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('تم إرسال النتيجة إلى Telegram:', data);
+            })
+            .catch(error => {
+                console.error('خطأ في إرسال النتيجة إلى Telegram:', error);
+            });
+        }
+    </script>
+</body>
+</html>
